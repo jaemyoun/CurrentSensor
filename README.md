@@ -1,3 +1,3 @@
 # CurrentSensor
 
-CurrentSensor is to make measurement tool for HDD power consumption.
+CurrentSensor is for a measurement tool for HDD power consumption.
