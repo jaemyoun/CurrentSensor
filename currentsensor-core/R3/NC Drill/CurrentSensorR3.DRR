@@ -1,0 +1,20 @@
+---------------------------------------------------------------------------
+NCDrill File Report For: CurrentSensorR3.PcbDoc   2015-03-22  ¿ÀÈÄ 5:15:41
+---------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : CurrentSensorR3-RoundHoles.TXT
+ASCII SlotHoles File : CurrentSensorR3-SlotHoles.TXT
+
+Tool         Hole Size           Hole Type     Hole Count Plated       Tool Travel
+---------------------------------------------------------------------------
+T1        16mil (0.4064mm)         Round          54               11.13 Inch (282.59 mm)
+T2        20mil (0.508mm)          Round          13               4.14 Inch (105.27 mm)
+T3        39mil (0.9906mm)         Round          20               2.74 Inch (69.68 mm)
+T4        39mil (0.9906mm)         Slot           2                3.03 Inch (77.02 mm)
+T5        51mil (1.2954mm)         Round          2                1.49 Inch (37.72 mm)
+T6        63mil (1.6002mm)         Round          2                1.31 Inch (33.19 mm)
+---------------------------------------------------------------------------
+Totals                                            93               23.84 Inch (605.46 mm)
+
+Total Processing Time (hh:mm:ss) : 00:00:00
