@@ -44,7 +44,7 @@ NC Drill files : [Link](currentsensor-core/R3/hardware/currentsensor-core-R3-NCD
 
 <img src="https://raw.githubusercontent.com/jaemyoun/CurrentSensor/master/res/current_sensor_R3_back.JPG" width="400px"/>
 
-<img src="https://raw.githubusercontent.com/jaemyoun/CurrentSensor/master/res/current_sensor_R3_5ea.png" width="400px"/>
+<img src="https://raw.githubusercontent.com/jaemyoun/CurrentSensor/master/res/current_sensor_R3_5ea.JPG" width="400px"/>
 
 ## Controller Shield
 
