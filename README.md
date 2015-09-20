@@ -1,10 +1,11 @@
-# CurrentSensor
+# IoDM
 
-CurrentSensor is for a measurement tool for HDD power consumption.
+Internet of Disk Manger (IoDM) is a current sensor manager to measure HDD power consumption and supervise disk states.
+Initial name of IoDM is CurrentSensor, and  it changed after revision 3.
 
 ## Description
 
-## CurrentSensor core
+## IoDM core
 
 ### Revision 1
 
