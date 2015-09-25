@@ -1,4 +1,4 @@
-/*
+/* git test
  * Internet of Disk Manager (IoDM) for Arduino Yun
  *
  * for Cold Storage project
@@ -8,7 +8,7 @@
 
 #include <Wire.h>
 #include <LiquidCrystal.h>
-#include <INA226.h>
+#include "INA226.h"
 
 //
 // Port Setting
@@ -35,7 +35,7 @@
 //
 // for INA226
 //
-#define NUMOF_INA226													(5 * 2)
+#define NUMOF_INA226							(5 * 2)
 const int   INA226_ADDR_S0_12V    = 0x40;     // INA226 I2C Address (A1=GND, A0=GND)
 const int   INA226_ADDR_S0_5V     = 0x41;     // INA226 I2C Address (A1=GND, A0=VS+)
 const int   INA226_ADDR_S1_12V    = 0x42;     // INA226 I2C Address (A1=GND, A0=SDA)
@@ -53,11 +53,13 @@ const int 	INA226_ADDR[NUMOF_INA226] = {	INA226_ADDR_S0_12V, INA226_ADDR_S0_5V,
 																					INA226_ADDR_S4_12V, INA226_ADDR_S4_5V,};
 INA226 ina[NUMOF_INA226];
 
-// TODO: delete this func.
-void checkConfig()
+void checkConfig(char idx)
 {
+	Serial.print("INA226 Address: ");
+	Serial.println(INA226_ADDR[idx]);
+
   Serial.print("Mode:                  ");
-  switch (ina[0].getMode())
+  switch (ina[idx].getMode())
   {
     case INA226_MODE_POWER_DOWN:      Serial.println("Power-Down"); break;
     case INA226_MODE_SHUNT_TRIG:      Serial.println("Shunt Voltage, Triggered"); break;
@@ -71,7 +73,7 @@ void checkConfig()
   }
 
   Serial.print("Samples average:       ");
-  switch (ina[0].getAverages())
+  switch (ina[idx].getAverages())
   {
     case INA226_AVERAGES_1:           Serial.println("1 sample"); break;
     case INA226_AVERAGES_4:           Serial.println("4 samples"); break;
@@ -85,7 +87,7 @@ void checkConfig()
   }
 
   Serial.print("Bus conversion time:   ");
-  switch (ina[0].getBusConversionTime())
+  switch (ina[idx].getBusConversionTime())
   {
     case INA226_BUS_CONV_TIME_140US:  Serial.println("140uS"); break;
     case INA226_BUS_CONV_TIME_204US:  Serial.println("204uS"); break;
@@ -99,7 +101,7 @@ void checkConfig()
   }
 
   Serial.print("Shunt conversion time: ");
-  switch (ina[0].getShuntConversionTime())
+  switch (ina[idx].getShuntConversionTime())
   {
     case INA226_SHUNT_CONV_TIME_140US:  Serial.println("140uS"); break;
     case INA226_SHUNT_CONV_TIME_204US:  Serial.println("204uS"); break;
@@ -113,19 +115,19 @@ void checkConfig()
   }
 
   Serial.print("Max possible current:  ");
-  Serial.print(ina[0].getMaxPossibleCurrent());
+  Serial.print(ina[idx].getMaxPossibleCurrent());
   Serial.println(" A");
 
   Serial.print("Max current:           ");
-  Serial.print(ina[0].getMaxCurrent());
+  Serial.print(ina[idx].getMaxCurrent());
   Serial.println(" A");
 
   Serial.print("Max shunt voltage:     ");
-  Serial.print(ina[0].getMaxShuntVoltage());
+  Serial.print(ina[idx].getMaxShuntVoltage());
   Serial.println(" V");
 
   Serial.print("Max power:             ");
-  Serial.print(ina[0].getMaxPower());
+  Serial.print(ina[idx].getMaxPower());
   Serial.println(" W");
 }
 
@@ -185,6 +187,7 @@ void selectLED(int selected) {
 void setup()
 {
   Serial.begin(115200); // setup Serial
+	while (!Serial) ;
   setupSwitch();  // setup two switchs
   setupLED(); // setup LEDs
   lcd.begin(16, 2);  // setup a LCD
@@ -194,15 +197,16 @@ void setup()
   Serial.println("-----------------------------------------------");
 
   for ( char idx = 0; idx < NUMOF_INA226; idx++ ) {
+		Serial.print("INA226 "); Serial.print((int)idx); Serial.println(" Configure...");
+
     ina[idx].begin(INA226_ADDR[idx]);
     // Configure INA226
     ina[idx].configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
     // Calibrate INA226. Rshunt = 0.01 ohm, Max excepted current = 4A
     ina[idx].calibrate(0.002, 4);
+	  // Display configuration
+	  checkConfig(idx);
   }
-
-  // Display configuration
-  checkConfig();
 
   Serial.println("-----------------------------------------------");
 }
@@ -212,7 +216,7 @@ void loop()
   char idxINA226;
   float Power5v, Power12v, PowerSum;
   static char selectedINA226;
-  static int timeout
+  static int timeout;
 
   // Selecting an INA226 for printing on the LCD
   if ( digitalRead(PIN_SWITCH0) == HIGH ) {

@@ -40,7 +40,6 @@ bool INA226::configure(ina226_averages_t avg, ina226_busConvTime_t busConvTime, 
     uint16_t config = 0;
 
     config |= (avg << 9 | busConvTime << 6 | shuntConvTime << 3 | mode);
-
     vBusMax = 36;
     vShuntMax = 0.08192f;
 
