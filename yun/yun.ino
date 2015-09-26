@@ -8,6 +8,9 @@
 
 #include <Wire.h>
 #include <LiquidCrystal.h>
+#include <Parse.h>
+#include <Bridge.h>
+#include <assert.h>
 #include "INA226.h"
 
 //
@@ -35,102 +38,23 @@
 //
 // for INA226
 //
-#define NUMOF_INA226							(5 * 2)
-const int   INA226_ADDR_S0_12V    = 0x40;     // INA226 I2C Address (A1=GND, A0=GND)
-const int   INA226_ADDR_S0_5V     = 0x41;     // INA226 I2C Address (A1=GND, A0=VS+)
-const int   INA226_ADDR_S1_12V    = 0x42;     // INA226 I2C Address (A1=GND, A0=SDA)
-const int   INA226_ADDR_S1_5V     = 0x43;     // INA226 I2C Address (A1=GND, A0=SCL)
-const int   INA226_ADDR_S2_12V    = 0x44;     // INA226 I2C Address (A1=VS+, A0=GND)
-const int   INA226_ADDR_S2_5V     = 0x45;     // INA226 I2C Address (A1=VS+, A0=VS+)
-const int   INA226_ADDR_S3_12V    = 0x46;     // INA226 I2C Address (A1=VS+, A0=SDA)
-const int   INA226_ADDR_S3_5V     = 0x47;     // INA226 I2C Address (A1=VS+, A0=SCL)
-const int   INA226_ADDR_S4_12V    = 0x48;     // INA226 I2C Address (A1=SDA, A0=GND)
-const int 	INA226_ADDR_S4_5V     = 0x49;     // INA226 I2C Address (A1=SDA, A0=VS+)
+#define NUMOF_INA226					(5 * 2)
+#define INA226_ADDR_S0_12V    (0x40)     // INA226 I2C Address (A1=GND, A0=GND)
+#define INA226_ADDR_S0_5V     (0x41)     // INA226 I2C Address (A1=GND, A0=VS+)
+#define INA226_ADDR_S1_12V    (0x42)     // INA226 I2C Address (A1=GND, A0=SDA)
+#define INA226_ADDR_S1_5V     (0x43)     // INA226 I2C Address (A1=GND, A0=SCL)
+#define INA226_ADDR_S2_12V    (0x44)     // INA226 I2C Address (A1=VS+, A0=GND)
+#define INA226_ADDR_S2_5V     (0x45)     // INA226 I2C Address (A1=VS+, A0=VS+)
+#define INA226_ADDR_S3_12V    (0x46)     // INA226 I2C Address (A1=VS+, A0=SDA)
+#define INA226_ADDR_S3_5V     (0x47)     // INA226 I2C Address (A1=VS+, A0=SCL)
+#define INA226_ADDR_S4_12V    (0x48)     // INA226 I2C Address (A1=SDA, A0=GND)
+#define INA226_ADDR_S4_5V     (0x49)     // INA226 I2C Address (A1=SDA, A0=VS+)
 const int 	INA226_ADDR[NUMOF_INA226] = {	INA226_ADDR_S0_12V, INA226_ADDR_S0_5V,
 																					INA226_ADDR_S1_12V, INA226_ADDR_S1_5V,
 																					INA226_ADDR_S2_12V, INA226_ADDR_S2_5V,
 																					INA226_ADDR_S3_12V, INA226_ADDR_S3_5V,
 																					INA226_ADDR_S4_12V, INA226_ADDR_S4_5V,};
 INA226 ina[NUMOF_INA226];
-
-void checkConfig(char idx)
-{
-	Serial.print("INA226 Address: ");
-	Serial.println(INA226_ADDR[idx]);
-
-  Serial.print("Mode:                  ");
-  switch (ina[idx].getMode())
-  {
-    case INA226_MODE_POWER_DOWN:      Serial.println("Power-Down"); break;
-    case INA226_MODE_SHUNT_TRIG:      Serial.println("Shunt Voltage, Triggered"); break;
-    case INA226_MODE_BUS_TRIG:        Serial.println("Bus Voltage, Triggered"); break;
-    case INA226_MODE_SHUNT_BUS_TRIG:  Serial.println("Shunt and Bus, Triggered"); break;
-    case INA226_MODE_ADC_OFF:         Serial.println("ADC Off"); break;
-    case INA226_MODE_SHUNT_CONT:      Serial.println("Shunt Voltage, Continuous"); break;
-    case INA226_MODE_BUS_CONT:        Serial.println("Bus Voltage, Continuous"); break;
-    case INA226_MODE_SHUNT_BUS_CONT:  Serial.println("Shunt and Bus, Continuous"); break;
-    default: Serial.println("unknown");
-  }
-
-  Serial.print("Samples average:       ");
-  switch (ina[idx].getAverages())
-  {
-    case INA226_AVERAGES_1:           Serial.println("1 sample"); break;
-    case INA226_AVERAGES_4:           Serial.println("4 samples"); break;
-    case INA226_AVERAGES_16:          Serial.println("16 samples"); break;
-    case INA226_AVERAGES_64:          Serial.println("64 samples"); break;
-    case INA226_AVERAGES_128:         Serial.println("128 samples"); break;
-    case INA226_AVERAGES_256:         Serial.println("256 samples"); break;
-    case INA226_AVERAGES_512:         Serial.println("512 samples"); break;
-    case INA226_AVERAGES_1024:        Serial.println("1024 samples"); break;
-    default: Serial.println("unknown");
-  }
-
-  Serial.print("Bus conversion time:   ");
-  switch (ina[idx].getBusConversionTime())
-  {
-    case INA226_BUS_CONV_TIME_140US:  Serial.println("140uS"); break;
-    case INA226_BUS_CONV_TIME_204US:  Serial.println("204uS"); break;
-    case INA226_BUS_CONV_TIME_332US:  Serial.println("332uS"); break;
-    case INA226_BUS_CONV_TIME_588US:  Serial.println("558uS"); break;
-    case INA226_BUS_CONV_TIME_1100US: Serial.println("1.100ms"); break;
-    case INA226_BUS_CONV_TIME_2116US: Serial.println("2.116ms"); break;
-    case INA226_BUS_CONV_TIME_4156US: Serial.println("4.156ms"); break;
-    case INA226_BUS_CONV_TIME_8244US: Serial.println("8.244ms"); break;
-    default: Serial.println("unknown");
-  }
-
-  Serial.print("Shunt conversion time: ");
-  switch (ina[idx].getShuntConversionTime())
-  {
-    case INA226_SHUNT_CONV_TIME_140US:  Serial.println("140uS"); break;
-    case INA226_SHUNT_CONV_TIME_204US:  Serial.println("204uS"); break;
-    case INA226_SHUNT_CONV_TIME_332US:  Serial.println("332uS"); break;
-    case INA226_SHUNT_CONV_TIME_588US:  Serial.println("558uS"); break;
-    case INA226_SHUNT_CONV_TIME_1100US: Serial.println("1.100ms"); break;
-    case INA226_SHUNT_CONV_TIME_2116US: Serial.println("2.116ms"); break;
-    case INA226_SHUNT_CONV_TIME_4156US: Serial.println("4.156ms"); break;
-    case INA226_SHUNT_CONV_TIME_8244US: Serial.println("8.244ms"); break;
-    default: Serial.println("unknown");
-  }
-
-  Serial.print("Max possible current:  ");
-  Serial.print(ina[idx].getMaxPossibleCurrent());
-  Serial.println(" A");
-
-  Serial.print("Max current:           ");
-  Serial.print(ina[idx].getMaxCurrent());
-  Serial.println(" A");
-
-  Serial.print("Max shunt voltage:     ");
-  Serial.print(ina[idx].getMaxShuntVoltage());
-  Serial.println(" V");
-
-  Serial.print("Max power:             ");
-  Serial.print(ina[idx].getMaxPower());
-  Serial.println(" W");
-}
-
 
 //
 // for LCD
@@ -184,31 +108,47 @@ void selectLED(int selected) {
   }
 }
 
+//
+// for Parse
+//
+void sendToParse(char *str) {
+  ParseObjectCreate create;
+  create.setClassName("IoDM");
+  create.add("SID", "BULLH");
+  create.addJSONValue("consumption", str);
+  // create.addJSONValue("arrayField", "[30,\"s\"]");
+  // create.addJSONValue("emptyField", "null");
+  ParseResponse createResponse = create.send();
+  assert(createResponse.getErrorCode() == 0);
+  createResponse.close();
+}
+
 void setup()
 {
+	Bridge.begin();
   Serial.begin(115200); // setup Serial
-	while (!Serial) ;
+	while (!Serial);
   setupSwitch();  // setup two switchs
   setupLED(); // setup LEDs
   lcd.begin(16, 2);  // setup a LCD
 
-  // setup INA226
-  Serial.println("Initialize INA226");
-  Serial.println("-----------------------------------------------");
-
-  for ( char idx = 0; idx < NUMOF_INA226; idx++ ) {
-		Serial.print("INA226 "); Serial.print((int)idx); Serial.println(" Configure...");
-
-    ina[idx].begin(INA226_ADDR[idx]);
-    // Configure INA226
-    ina[idx].configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
-    // Calibrate INA226. Rshunt = 0.01 ohm, Max excepted current = 4A
-    ina[idx].calibrate(0.002, 4);
-	  // Display configuration
-	  checkConfig(idx);
+  // Initialize Parse
+  Serial.println("Initialize Parse...");
+  Parse.begin("6ZMrA6DGjcAHMIOFotmvexa1RenOOU3FVhzJu7kD", "RM4fO7CFGOXnETRpZosu5NNfFk1COwx6bG2yeSZt");
+	Serial.println(Parse.getInstallationId());
+  Serial.println(Parse.getSessionToken());
+  if(Parse.startPushService()) {
+    Serial.println("\nParse push started\n");
   }
 
-  Serial.println("-----------------------------------------------");
+  // setup INA226
+  Serial.println("Initialize INA226...");
+  for ( char idx = 0; idx < NUMOF_INA226; idx++ ) {
+		Serial.print("INA226 "); Serial.print((int)idx); Serial.println(" Configure...");
+    ina[idx].begin(INA226_ADDR[idx]);
+    ina[idx].configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
+    ina[idx].calibrate(0.002, 4);    // Calibrate INA226. Rshunt = 0.01 ohm, Max excepted current = 4A
+  }
 }
 
 void loop()
@@ -217,6 +157,10 @@ void loop()
   float Power5v, Power12v, PowerSum;
   static char selectedINA226;
   static int timeout;
+	String parseObjectValue = "[";
+	char parseObjectChar[100];
+
+	memset(parseObjectChar, NULL, 100);
 
   // Selecting an INA226 for printing on the LCD
   if ( digitalRead(PIN_SWITCH0) == HIGH ) {
@@ -233,13 +177,13 @@ void loop()
   selectLED(selectedINA226);
 
   // Printing all power consumption on the Serial and the LCD
-  Serial.print("S");
   for ( idxINA226 = 0; idxINA226 < NUMOF_INA226; idxINA226 += 2 ) {
     Power12v = ina[idxINA226].readBusPower();
     Power5v = ina[idxINA226+1].readBusPower();
     PowerSum = Power5v + Power12v;
-    Serial.print(PowerSum, 5);
-    Serial.print(",");
+
+		parseObjectValue.concat(PowerSum);
+		parseObjectValue.concat(",");
 
     if ( idxINA226 == selectedINA226 ) {
       lcd.clear();
@@ -253,23 +197,10 @@ void loop()
       lcd.print(" 12v"); lcd.print(Power12v);
     }
   }
-  // Serial.print("Bus voltage:   ");
-  // Serial.print(ina.readBusVoltage(), 5);
-  // Serial.println(" V");
-  //
-  // Serial.print("Bus power:     ");
-  // Serial.print(ina.readBusPower(), 5);
-  // Serial.println(" W");
-  //
-  //
-  // Serial.print("Shunt voltage: ");
-  // Serial.print(ina.readShuntVoltage(), 5);
-  // Serial.println(" V");
-  //
-  // Serial.print("Shunt current: ");
-  // Serial.print(ina.readShuntCurrent(), 5);
-  // Serial.println(" A");
-  Serial.println("");
 
+	parseObjectValue.toCharArray(parseObjectChar, parseObjectValue.length());
+	parseObjectChar[parseObjectValue.length() - 1] = ']';
+	Serial.println(parseObjectChar);
+	sendToParse(parseObjectChar);
   delay(1000);
 }
