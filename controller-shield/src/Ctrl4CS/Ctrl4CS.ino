@@ -297,20 +297,30 @@ void printINA226(long *voltage, short *current, long *power) {
 	static int selectedINA226;
 
 	// print by Serial Comm.
-	for ( indexINA226 = 0; indexINA226 < NUMOF_INA226; indexINA226 += 2) {
-  	// Serial.println();
-		snprintf(buf, NELEMS(buf)
-			, "S%d:%5ldmV%5dmA%5ldmW%5ldmV%5dmA%5ldmW%5ldmW"
-			, (indexINA226 >> 1)
-			, voltage[indexINA226]
-			, current[indexINA226]
-			, power[indexINA226]
-			, voltage[indexINA226+1]
-			, current[indexINA226+1]
-			, power[indexINA226+1]
-			, power[indexINA226] + power[indexINA226+1]
+  // Serial.println("--------");
+	// for ( indexINA226 = 0; indexINA226 < NUMOF_INA226; indexINA226 += 2) {
+	// 	snprintf(buf, NELEMS(buf)
+	// 		, "S%d:%5ldmV%5dmA%5ldmW%5ldmV%5dmA%5ldmW%5ldmW"
+	// 		, (indexINA226 >> 1)
+	// 		, voltage[indexINA226]
+	// 		, current[indexINA226]
+	// 		, power[indexINA226]
+	// 		, voltage[indexINA226+1]
+	// 		, current[indexINA226+1]
+	// 		, power[indexINA226+1]
+	// 		, power[indexINA226] + power[indexINA226+1]
+	// 		);
+  //     Serial.println(buf);
+	// }
+  snprintf(buf, NELEMS(buf)
+			, "%5ld,%5ld,%5ld,%5ld,%5ld"
+			, power[0] + power[0+1]
+			, power[2] + power[2+1]
+			, power[4] + power[4+1]
+			, power[6] + power[6+1]
+			, power[8] + power[8+1]
 			);
-	}
+  Serial.println(buf);
 
   // print on LCD.
   if ( digitalRead(PIN_SWITCH0) == HIGH ) {
@@ -328,7 +338,7 @@ void printINA226(long *voltage, short *current, long *power) {
 
   printToLCD(selectedINA226, power);
 
-  delay(500);
+  delay(10);
 }
 
 void printToLCD(int selectedINA226, long *power) {
@@ -360,7 +370,7 @@ void printToLCD(int selectedINA226, long *power) {
 void setup() {
   // for INA2226
   Wire.begin();
-  // Serial.begin(9600);
+  Serial.begin(9600);
   setupINA226Register();
 
   // for switch
