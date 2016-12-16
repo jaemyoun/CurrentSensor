@@ -122,7 +122,7 @@ void setup() {
       lcd.setCursor(0, 0);
       lcd.print("Disk- Pow:");
       lcd.setCursor(0, 1);
-      lcd.print("5v0.00 12v0.00");
+      lcd.print("5v00.00 12v00.00");
 
   // for INA226
   Serial.println("Initialize INA226...");
@@ -226,7 +226,7 @@ void loop()
       lcd.print(PowerSum);
       lcd.setCursor(2, 1);
       lcd.print(Power5v);
-      lcd.setCursor(11, 0);
+      lcd.setCursor(11, 1);
       lcd.print(Power12v);
     }
   }
