@@ -9,7 +9,7 @@ IoDM is used benchmarking of Cold Storage that has energy-efficient technology, 
 
 <img src="res/testbed-single.png" width="600px"/>
 
-<img src="res/testbed-tree.png" width="600px"/>
+<img src="res/testbed-three.png" width="600px"/>
 
 ## IoDM core
 
