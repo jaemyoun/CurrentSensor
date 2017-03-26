@@ -5,6 +5,12 @@ Initial name of IoDM is CurrentSensor, and  it changed after revision 3.
 
 ## Description
 
+IoDM is used benchmarking of Cold Storage that has energy-efficient technology, and full version is as follows:
+
+<img src="res/testbed-single.png" width="600px"/>
+
+<img src="res/testbed-tree.png" width="600px"/>
+
 ## IoDM core
 
 ### Revision 1
